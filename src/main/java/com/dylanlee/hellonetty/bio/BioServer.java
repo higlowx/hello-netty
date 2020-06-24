@@ -3,6 +3,8 @@ package com.dylanlee.hellonetty.bio;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Dylan.Lee
@@ -14,9 +16,11 @@ public class BioServer {
 
 
     private final int port;
+    private final ExecutorService executor;
 
     public BioServer(int port) {
         this.port = port;
+        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     }
 
     public void start() {
@@ -25,8 +29,7 @@ public class BioServer {
             serverSocket = new ServerSocket(this.port);
             for (; ; ) {
                 Socket socket = serverSocket.accept();
-                Thread thread = new BioServerHandler(socket);
-                thread.start();
+                this.executor.submit(new BioServerHandler(socket));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,7 +42,7 @@ public class BioServer {
     }
 }
 
-class BioServerHandler extends Thread {
+class BioServerHandler implements Runnable {
 
     Socket socket;
 
@@ -47,7 +50,6 @@ class BioServerHandler extends Thread {
         this.socket = socket;
     }
 
-    @Override
     public void run() {
         BufferedReader reader = null;
         PrintWriter writer = null;
