@@ -59,6 +59,7 @@ class BioServerHandler implements Runnable {
             writer = new PrintWriter(socket.getOutputStream(), true);
             String body;
             while ((body = reader.readLine()) != null && body.length() != 0) {
+                System.out.println(" 线程id: " + Thread.currentThread().getId());
                 System.out.println("接收到请求数据：" + body);
                 writer.println("已收到 " + body + " 予以回复");
             }
