@@ -55,10 +55,7 @@ public class GroupChatServerHandler extends SimpleChannelInboundHandler<String> 
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        Channel channel = ctx.channel();
-        GroupChatRepo.GROUP.remove(channel);
-        System.out.println("[客户端]" + channel.remoteAddress() + "异常下线 " + DateTime.now().toString(DATE_FORMAT));
-        ctx.close();
+        ctx.close();//会引发channelUnregistered
     }
 
 }
