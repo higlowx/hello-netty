@@ -36,6 +36,11 @@ public class NettyClient {
                                 public void channelActive(ChannelHandlerContext ctx) {
                                     ctx.writeAndFlush(Unpooled.copiedBuffer("hello server, i am client",CharsetUtil.UTF_8));
                                 }
+
+                                @Override
+                                public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+                                    ctx.close();
+                                }
                             });
                         }
                     });

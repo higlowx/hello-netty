@@ -48,6 +48,11 @@ public class NettyServer {
                                 public void channelActive(ChannelHandlerContext ctx) {
                                     System.out.println("channel读取开始");
                                 }
+
+                                @Override
+                                public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+                                    ctx.close();
+                                }
                             });
                         }
                     });
