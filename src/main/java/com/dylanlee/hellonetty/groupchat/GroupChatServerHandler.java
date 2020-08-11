@@ -22,9 +22,9 @@ public class GroupChatServerHandler extends SimpleChannelInboundHandler<String> 
     protected void channelRead0(ChannelHandlerContext ctx, String msg) {
         for (Channel channel : GroupChatRepo.GROUP) {
             if (ctx.channel().equals(channel)) {
-                ctx.writeAndFlush("[自己]" + DateTime.now().toString(DATE_FORMAT) + " 发送了\n'" + msg + "'\n");
+                ctx.writeAndFlush("[自己]发送了 " + DateTime.now().toString(DATE_FORMAT) + "\n" + msg);
             } else {
-                channel.writeAndFlush("[客户端]" + channel.remoteAddress() + " " + DateTime.now().toString(DATE_FORMAT) + " 发送了\n'" + msg + "'\n");
+                channel.writeAndFlush("[客户端]" + channel.remoteAddress() + "发送了 " + DateTime.now().toString(DATE_FORMAT) + "\n" + msg);
             }
         }
     }
@@ -45,12 +45,12 @@ public class GroupChatServerHandler extends SimpleChannelInboundHandler<String> 
 
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        GroupChatRepo.GROUP.writeAndFlush("[客户端]" + ctx.channel().remoteAddress() + "进入了聊天 " + DateTime.now().toString(DATE_FORMAT) + "\n");
+        GroupChatRepo.GROUP.writeAndFlush("[客户端]" + ctx.channel().remoteAddress() + "进入了聊天 " + DateTime.now().toString(DATE_FORMAT));
     }
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
-        GroupChatRepo.GROUP.writeAndFlush("[客户端]" + ctx.channel().remoteAddress() + "退出了聊天 " + DateTime.now().toString(DATE_FORMAT) + "\n");
+        GroupChatRepo.GROUP.writeAndFlush("[客户端]" + ctx.channel().remoteAddress() + "退出了聊天 " + DateTime.now().toString(DATE_FORMAT));
     }
 
     @Override
