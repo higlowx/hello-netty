@@ -41,6 +41,7 @@
             }
             if(socket.readyState === WebSocket.OPEN){
                 socket.send(inText)
+                document.getElementById("inText").value = "";
             }else{
                 alert("连接建立失败，无法发送")
             }
