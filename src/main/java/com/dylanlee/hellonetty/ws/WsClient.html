@@ -9,22 +9,34 @@
         if (!window.WebSocket) {
             alert("当前浏览器不支持websocket")
         } else {
-            socket = new WebSocket("ws://12.0.0.1:9999/hello");
-            socket.onmessage = function (res) {
-                resEcho(res);
+            socket = new WebSocket("ws://127.0.0.1:9999/hello");
+            socket.onmessage = function (event) {
+                // alert("2")
+                //MessageEvent,返回中含有data节点
+                eventEcho(event);
             }
 
-            socket.onopen = function (res) {
-                resEcho(res);
+            socket.onopen = function (event) {
+                // alert("1")
+                //Event,返回中不包含data节点，故刷新该页面时输出框出现undefined
+                //为了防止undefined，这里不再调用eventEcho()
+                // eventEcho(event);
+                let outText = document.getElementById("outText");
+                outText.value = "连接建立...\n";
             }
 
-            socket.onclose = function (res) {
-                resEcho(res);
+            socket.onclose = function (event) {
+                // alert("3")
+                //CloseEvent,返回中不包含data节点，故关闭server服务时输出框出现undefined
+                //为了防止undefined，这里不再调用eventEcho()
+                // eventEcho(event);
+                let outText = document.getElementById("outText");
+                outText.value = outText.value +"\n连接关闭...\n";
             }
         }
 
         function send(inText) {
-            if(!window.socket){
+            if(!socket){
                 return;
             }
             if(socket.readyState === WebSocket.OPEN){
@@ -34,22 +46,26 @@
             }
         }
 
-        function resEcho(res) {
+        function eventEcho(event) {
+            // console.log(event)
             let outText = document.getElementById("outText");
-            outText.value = outText.value + "\n" + res.data;
+            outText.value = outText.value + "\n" + event.data;
+        }
+
+        function clearEcho(){
+            document.getElementById('outText').value=''
         }
     </script>
 </head>
 <body>
 <form onsubmit="return false">
     <label for="inText"></label>
-    <textarea id="inText" style="height: 300px;width: 200px"></textarea>
-    <button id="send" style="height: 40px;width: 80px" onclick="send(this.document.getElementById('inText').value)">发送</button>
+    <textarea id="inText" name="inText" style="height: 300px;width: 200px"></textarea>
+    <button id="sendButton" style="height: 40px;width: 80px" onclick="send(document.getElementById('inText').value)">发送</button>
 
     <label for="outText"></label>
     <textarea id="outText" style="height: 300px;width: 200px" readonly></textarea>
-    <button id="clear" style="height: 40px;width: 80px" onclick="this.document.getElementById('outText').value=''">清空
-    </button>
+    <button id="clearButton" style="height: 40px;width: 80px" onclick="clearEcho()">清空</button>
 </form>
 
 

@@ -21,16 +21,12 @@ public class WsServerHandler extends SimpleChannelInboundHandler<TextWebSocketFr
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        TextWebSocketFrame frame = new TextWebSocketFrame("服务器已与您建立websocket连接\n");
-        ctx.writeAndFlush(frame);
-
+        System.out.println("客户端与服务器建立连接 "+ctx.channel().id().asLongText());
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
-        System.out.println("客户端与服务器断开连接");
-        TextWebSocketFrame frame = new TextWebSocketFrame("服务器已与您断开连接\n");
-        ctx.writeAndFlush(frame);
+        System.out.println("客户端与服务器断开连接 "+ctx.channel().id().asLongText());
     }
 
     @Override
