@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WsClient</title>
+
+    <script>
+        let socket;
+        if (!window.WebSocket) {
+            alert("当前浏览器不支持websocket")
+        } else {
+            socket = new WebSocket("ws://12.0.0.1:9999/hello");
+            socket.onmessage = function (res) {
+                resEcho(res);
+            }
+
+            socket.onopen = function (res) {
+                resEcho(res);
+            }
+
+            socket.onclose = function (res) {
+                resEcho(res);
+            }
+        }
+
+        function send(inText) {
+            if(!window.socket){
+                return;
+            }
+            if(socket.readyState === WebSocket.OPEN){
+                socket.send(inText)
+            }else{
+                alert("连接建立失败，无法发送")
+            }
+        }
+
+        function resEcho(res) {
+            let outText = document.getElementById("outText");
+            outText.value = outText.value + "\n" + res.data;
+        }
+    </script>
+</head>
+<body>
+<form onsubmit="return false">
+    <label for="inText"></label>
+    <textarea id="inText" style="height: 300px;width: 200px"></textarea>
+    <button id="send" style="height: 40px;width: 80px" onclick="send(this.document.getElementById('inText').value)">发送</button>
+
+    <label for="outText"></label>
+    <textarea id="outText" style="height: 300px;width: 200px" readonly></textarea>
+    <button id="clear" style="height: 40px;width: 80px" onclick="this.document.getElementById('outText').value=''">清空
+    </button>
+</form>
+
+
+</body>
+</html>
