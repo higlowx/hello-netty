@@ -1,39 +1,39 @@
-package com.dylanlee.hellonetty.dubbo.provider;
+package com.dylanlee.hellonetty.dubbo.customer;
 
 import com.dylanlee.hellonetty.dubbo.DubboDecoder;
 import com.dylanlee.hellonetty.dubbo.DubboEncoder;
+import com.dylanlee.hellonetty.dubbo.provider.DubboServerHandler;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
 /**
  * @author Dylan.Lee
- * @date 2020/8/24
+ * @date 2020/8/26
  * @since
  */
 
-public class DubboServer {
+public class DubboClient {
 
     private final int port;
+    private final String host;
 
-    DubboServer(int port) {
+    DubboClient(final int port, final String host) {
+        this.host = host;
         this.port = port;
     }
 
-    public void start() throws InterruptedException {
-        NioEventLoopGroup boss = new NioEventLoopGroup(1);
+    public void connect() throws Exception{
         NioEventLoopGroup worker = new NioEventLoopGroup();
         try {
-            io.netty.bootstrap.ServerBootstrap bootstrap = new io.netty.bootstrap.ServerBootstrap();
-            bootstrap.group(boss, worker)
-                    .channel(NioServerSocketChannel.class)
-                    .option(ChannelOption.SO_BACKLOG, 1024)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
+            io.netty.bootstrap.Bootstrap bootstrap = new io.netty.bootstrap.Bootstrap();
+            bootstrap.group(worker)
+                    .channel(NioSocketChannel.class)
+                    .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()
@@ -43,18 +43,14 @@ public class DubboServer {
                                     //加入自定义协议编解码器
                                     .addLast("dubboEncoder", new DubboEncoder())
                                     .addLast("dubboDecoder", new DubboDecoder())
-                                    .addLast(new DubboServerHandler());
+                                    .addLast(null);
                         }
                     });
-            ChannelFuture future = bootstrap.bind(port).sync();
-            future.channel().closeFuture().sync();
+            ChannelFuture future = bootstrap.connect(host,port).sync();
+
+
         } finally {
-            boss.shutdownGracefully();
             worker.shutdownGracefully();
         }
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        new DubboServer(9999).start();
     }
 }
